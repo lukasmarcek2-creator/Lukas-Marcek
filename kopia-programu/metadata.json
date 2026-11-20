@@ -1,0 +1,6 @@
+{
+  "name": "Salzkammergut Cafe Reward Map",
+  "description": "Interactive coffee shop reward map for Salzkammergut with rewards.",
+  "requestFramePermissions": ["camera", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --color-natural-sage: #5A5A40;
+  --color-natural-gold: #D4AF37;
+  --color-natural-bg: #f5f5f0;
+  --color-natural-paper: #fafaf8;
+  --color-natural-text: #2c2c2c;
+  --color-natural-muted: #8a8a7e;
+  --color-natural-border: #e2e2d8;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: "Playfair Display", Georgia, Cambria, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-natural-bg);
+  color: var(--color-natural-text);
+}
+
+h1, h2, h3, h4, .font-serif-elegant {
+  font-family: var(--font-serif);
+}
+
+/* Fix leaflet pane overflow and shadows inside card layout */
+.leaflet-container {
+  font-family: var(--font-sans) !important;
+  border-radius: 16px;
+  border: 1px solid var(--color-natural-border);
+}
+
+/* Background dots pattern from the theme design specification */
+.bg-natural-dots {
+  background-image: radial-gradient(#9fb1a5 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
+}
+
