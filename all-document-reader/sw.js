@@ -1,5 +1,5 @@
 /* Service worker: offline režim + príjem zdieľaných súborov (Web Share Target). */
-const VERSION = 'adr-v1';
+const VERSION = 'adr-v2';
 const SHARED = 'adr-shared';
 const ASSETS = [
   './', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest',

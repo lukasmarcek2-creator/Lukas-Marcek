@@ -34,6 +34,7 @@
     <!-- Bočný panel: kategórie podľa formátu -->
     <aside class="sidebar" id="sidebar">
       <nav id="categoryList" class="categories"></nav>
+      <button class="cat pdf-default" id="pdfDefaultBtn">📲 <span>Otvárať PDF touto aplikáciou</span></button>
       <div class="sidebar-info" id="sourceInfo">Žiadny priečinok nie je načítaný.</div>
     </aside>
 
@@ -119,6 +120,27 @@
         <li>Zvoľte <strong>Pridať na plochu</strong>.</li>
         <li>Potvrďte <strong>Pridať</strong> – aplikácia sa objaví medzi ostatnými.</li>
       </ol>
+      <div class="dialog-actions"><button class="btn primary" value="close">Rozumiem</button></div>
+    </form>
+  </dialog>
+
+  <!-- Návod: nastavenie ako predvolený otvárač PDF -->
+  <dialog id="pdfDefaultDialog">
+    <form method="dialog" class="dialog-inner">
+      <h2>Otvárať PDF touto aplikáciou</h2>
+      <p class="muted" id="pdfDefaultStatus"></p>
+      <h3>Android</h3>
+      <ol class="ios-steps">
+        <li>Nainštalujte aplikáciu (tlačidlo <strong>⬇️ Inštalovať</strong> alebo menu Chrome ⋮ → <strong>Inštalovať aplikáciu</strong>).</li>
+        <li>V aplikácii Súbory, Gmail či WhatsApp ťuknite na ľubovoľné PDF.</li>
+        <li>V ponuke <strong>Otvoriť pomocou</strong> vyberte <strong>Doc Reader</strong> a zvoľte <strong>Vždy</strong>.</li>
+        <li>Ak sa ponuka nezobrazí (PDF sa otvára inou aplikáciou): <em>Nastavenia → Aplikácie → tá aplikácia → Predvolene otvárať → Vymazať predvolené</em> a skúste znova.</li>
+        <li>Vždy funguje aj <strong>Zdieľať → Doc Reader</strong>.</li>
+      </ol>
+      <h3>iPhone / iPad</h3>
+      <p class="muted">iOS nedovoľuje webovým aplikáciám registrovať sa ako otvárač súborov. PDF otvoríte tlačidlom <strong>📄 Otvoriť súbory</strong>.</p>
+      <h3>Počítač (Chrome / Edge)</h3>
+      <p class="muted">Po inštalácii kliknite na PDF pravým tlačidlom → <strong>Otvoriť pomocou → All Document Reader</strong>.</p>
       <div class="dialog-actions"><button class="btn primary" value="close">Rozumiem</button></div>
     </form>
   </dialog>

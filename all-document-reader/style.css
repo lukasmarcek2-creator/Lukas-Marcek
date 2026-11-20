@@ -202,6 +202,10 @@ dialog::backdrop { background: rgba(0,0,0,.4); }
   body { padding-bottom: env(safe-area-inset-bottom); }
 }
 
+.cat.pdf-default { margin-top: 12px; color: var(--accent); }
+.dialog-inner h3 { margin: 14px 0 6px; font-size: 14px; }
+.muted { color: var(--muted); margin: 0 0 8px; }
+
 /* Mobil */
 @media (max-width: 760px) {
   .only-mobile { display: inline-grid; }

@@ -1091,15 +1091,34 @@ $('installBtn').onclick = async () => {
   }
 };
 
-// Otvorenie súboru cez „Otvoriť pomocou…“ (nainštalovaná aplikácia, Chrome/Edge)
+// Otvorenie súboru cez „Otvoriť pomocou…“ (nainštalovaná aplikácia – File Handling API)
+const fileHandlingSupported = 'launchQueue' in window && 'files' in (window.LaunchParams?.prototype || {});
 if ('launchQueue' in window) {
   window.launchQueue.setConsumer(async params => {
     if (!params.files?.length) return;
-    const docs = await Promise.all(params.files.map(async h => makeDoc(await h.getFile(), h.name, h)));
+    const docs = (await Promise.all(params.files.map(async h => {
+      try { return makeDoc(await h.getFile(), h.name, h); } catch { return null; }
+    }))).filter(Boolean);
     const n = addDocs(docs);
-    if (n) openDoc(docs.find(Boolean));
+    if (n) openDoc(docs[0]);
+    else toast('Tento typ súboru nie je podporovaný');
   });
 }
+// Odkazy z manifestu (?open=file po spustení súborom, ?action=pdf zo skratky na ikone)
+{
+  const params = new URLSearchParams(location.search);
+  if (params.get('action') === 'pdf') { history.replaceState(null, '', location.pathname); state.category = 'pdf'; render(); }
+  else if (params.get('open') === 'file') history.replaceState(null, '', location.pathname);
+}
+
+$('pdfDefaultBtn').onclick = () => {
+  const st = $('pdfDefaultStatus');
+  if (isStandalone() && fileHandlingSupported) st.textContent = '✅ Aplikácia je nainštalovaná a tento prehliadač podporuje otváranie súborov. Stačí vybrať Doc Reader pri otvorení PDF.';
+  else if (isStandalone()) st.textContent = 'Aplikácia je nainštalovaná. Ak sa v ponuke „Otvoriť pomocou“ nezobrazí, aktualizujte Chrome – vždy však funguje „Zdieľať → Doc Reader“.';
+  else st.textContent = 'Najprv aplikáciu nainštalujte – až potom ju systém ponúkne na otváranie PDF.';
+  $('pdfDefaultDialog').showModal();
+  el.sidebar.classList.remove('open');
+};
 
 // Súbory zdieľané z inej aplikácie (Web Share Target – service worker ich uloží do cache)
 async function receiveSharedFiles() {

@@ -2,7 +2,7 @@
   "id": "./",
   "name": "All Document Reader",
   "short_name": "Doc Reader",
-  "description": "Prehliadač PDF, Word, Excel, PowerPoint, TXT a CSV v jednej aplikácii.",
+  "description": "Otvárač PDF a prehliadač Word, Excel, PowerPoint, TXT a CSV v jednej aplikácii.",
   "lang": "sk",
   "start_url": "./",
   "scope": "./",
@@ -10,12 +10,35 @@
   "orientation": "any",
   "background_color": "#f5f6f8",
   "theme_color": "#2f6fde",
-  "categories": ["productivity", "utilities"],
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "share_target": {
     "action": "./share-target",
@@ -26,20 +49,37 @@
         {
           "name": "files",
           "accept": [
-            "application/pdf", ".pdf",
-            "application/msword", ".doc",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document", ".docx",
-            "application/vnd.ms-excel", ".xls",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ".xlsx",
-            "application/vnd.ms-powerpoint", ".ppt",
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation", ".pptx",
-            "application/vnd.oasis.opendocument.text", ".odt",
-            "application/vnd.oasis.opendocument.spreadsheet", ".ods",
-            "application/rtf", ".rtf",
-            "text/plain", ".txt", ".md", ".log",
-            "text/csv", ".csv", ".tsv",
-            "application/json", ".json",
-            "application/xml", ".xml"
+            "application/pdf",
+            ".pdf",
+            "application/msword",
+            ".doc",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".docx",
+            "application/vnd.ms-excel",
+            ".xls",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ".xlsx",
+            "application/vnd.ms-powerpoint",
+            ".ppt",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            ".pptx",
+            "application/vnd.oasis.opendocument.text",
+            ".odt",
+            "application/vnd.oasis.opendocument.spreadsheet",
+            ".ods",
+            "application/rtf",
+            ".rtf",
+            "text/plain",
+            ".txt",
+            ".md",
+            ".log",
+            "text/csv",
+            ".csv",
+            ".tsv",
+            "application/json",
+            ".json",
+            "application/xml",
+            ".xml"
           ]
         }
       ]
@@ -47,19 +87,153 @@
   },
   "file_handlers": [
     {
-      "action": "./",
+      "action": "./?open=file",
+      "name": "PDF dokument",
       "accept": {
-        "application/pdf": [".pdf"],
-        "application/msword": [".doc"],
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
-        "application/vnd.ms-excel": [".xls"],
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
-        "application/vnd.ms-powerpoint": [".ppt"],
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation": [".pptx"],
-        "text/plain": [".txt", ".md", ".log"],
-        "text/csv": [".csv", ".tsv"]
+        "application/pdf": [
+          ".pdf"
+        ]
       },
-      "launch_type": "multiple-clients"
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "icons/icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "single-client"
+    },
+    {
+      "action": "./?open=file",
+      "name": "Word dokument",
+      "accept": {
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+          ".docx"
+        ],
+        "application/msword": [
+          ".doc"
+        ],
+        "application/vnd.oasis.opendocument.text": [
+          ".odt"
+        ],
+        "application/rtf": [
+          ".rtf"
+        ]
+      },
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "icons/icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "single-client"
+    },
+    {
+      "action": "./?open=file",
+      "name": "Excel tabuľka",
+      "accept": {
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+          ".xlsx"
+        ],
+        "application/vnd.ms-excel": [
+          ".xls"
+        ],
+        "application/vnd.oasis.opendocument.spreadsheet": [
+          ".ods"
+        ],
+        "text/csv": [
+          ".csv"
+        ],
+        "text/tab-separated-values": [
+          ".tsv"
+        ]
+      },
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "icons/icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "single-client"
+    },
+    {
+      "action": "./?open=file",
+      "name": "PowerPoint prezentácia",
+      "accept": {
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation": [
+          ".pptx"
+        ],
+        "application/vnd.ms-powerpoint": [
+          ".ppt"
+        ]
+      },
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "icons/icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "single-client"
+    },
+    {
+      "action": "./?open=file",
+      "name": "Textový súbor",
+      "accept": {
+        "text/plain": [
+          ".txt",
+          ".md",
+          ".log"
+        ]
+      },
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "icons/icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "single-client"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "PDF dokumenty",
+      "short_name": "PDF",
+      "url": "./?action=pdf",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
