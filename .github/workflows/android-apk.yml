@@ -38,7 +38,7 @@ jobs:
           cat > capacitor.config.json <<'JSON'
           { "appId": "sk.lukasmarcek.alldocumentreader", "appName": "All Document Reader", "webDir": "www" }
           JSON
-          npm install @capacitor/core@6.2.0 @capacitor/cli@6.2.0 @capacitor/android@6.2.0
+          npm install @capacitor/core@6.2.0 @capacitor/cli@6.2.0 @capacitor/android@6.2.0 @capacitor/filesystem@6.0.3 @capacitor/share@6.0.3
           npx cap add android
           npx cap sync android
 
@@ -72,4 +72,5 @@ jobs:
           files: all-document-reader.apk
           body: |
             Android aplikácia All Document Reader (PDF, Word, Excel, PowerPoint, text). Funguje offline.
+            Novinka: úprava PDF – prepisovanie a pridávanie textu tak, aby dokument vyzeral ako originál.
             V telefóne stiahni súbor all-document-reader.apk a otvor ho. Ak sa telefón spýta, povoľ inštaláciu z tohto zdroja.
