@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - "all-document-reader/**"
+      - "android-app/**"
       - ".github/workflows/android-apk.yml"
   workflow_dispatch:
 
@@ -42,6 +43,13 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Register app for opening documents
+        run: |
+          python3 android-app/add-intent-filters.py apk-build/android/app/src/main/AndroidManifest.xml
+          ACT=$(find apk-build/android/app/src/main/java -name MainActivity.java | head -1)
+          cp android-app/MainActivity.java "$ACT"
+          cp android-app/OpenedFilePlugin.java "$(dirname "$ACT")/"
+
       - name: Set app icon
         run: |
           RES=apk-build/android/app/src/main/res
@@ -72,5 +80,6 @@ jobs:
           files: all-document-reader.apk
           body: |
             Android aplikácia All Document Reader (PDF, Word, Excel, PowerPoint, text). Funguje offline.
-            Novinka: úprava PDF – prepisovanie a pridávanie textu tak, aby dokument vyzeral ako originál.
+            Úprava PDF – prepisovanie a pridávanie textu tak, aby dokument vyzeral ako originál.
+            Novinka: aplikáciu je možné nastaviť ako predvolenú na otváranie PDF, Word, Excel a ďalších dokumentov.
             V telefóne stiahni súbor all-document-reader.apk a otvor ho. Ak sa telefón spýta, povoľ inštaláciu z tohto zdroja.

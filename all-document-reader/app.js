@@ -1140,3 +1140,31 @@ async function receiveSharedFiles() {
 }
 receiveSharedFiles();
 
+
+// Android aplikácia: dokument otvorený cez „Otvoriť pomocou“ / predvolenú aplikáciu alebo „Zdieľať“
+(function receiveNativeFiles() {
+  const cap = window.Capacitor;
+  if (!cap || typeof cap.nativePromise !== 'function') return;
+  const MIME_EXT = {
+    'application/pdf': 'pdf', 'application/msword': 'doc', 'application/rtf': 'rtf', 'text/rtf': 'rtf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+    'application/vnd.oasis.opendocument.text': 'odt', 'application/vnd.ms-excel': 'xls',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+    'application/vnd.oasis.opendocument.spreadsheet': 'ods', 'application/vnd.ms-powerpoint': 'ppt',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+    'text/plain': 'txt', 'text/csv': 'csv', 'text/comma-separated-values': 'csv', 'text/tab-separated-values': 'tsv',
+    'text/markdown': 'md', 'text/x-markdown': 'md', 'application/json': 'json', 'text/xml': 'xml', 'application/xml': 'xml',
+  };
+  async function handle(f) {
+    if (!f || !f.data) { if (f && f.error) toast('Súbor sa nepodarilo otvoriť: ' + f.error, 5000); return; }
+    let name = (f.name || 'dokument').split('/').pop();
+    if (!EXT_TO_TYPE[extOf(name)] && MIME_EXT[f.mimeType]) name += '.' + MIME_EXT[f.mimeType];
+    const blob = await (await fetch('data:application/octet-stream;base64,' + f.data)).blob();
+    const doc = makeDoc(new File([blob], name, { type: f.mimeType || '', lastModified: Date.now() }), name);
+    if (!doc) return toast('Tento typ súboru aplikácia nevie otvoriť');
+    addDocs([doc]);
+    openDoc(state.docs.find(d => docKey(d) === docKey(doc)) || doc);
+  }
+  try { cap.addListener('OpenedFile', 'fileOpened', handle); } catch (e) { /* staršia verzia aplikácie */ }
+  cap.nativePromise('OpenedFile', 'getLaunchFile', {}).then(handle).catch(() => {});
+})();
