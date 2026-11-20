@@ -30,9 +30,10 @@ python3 -m http.server 8080
 Aplikácia je PWA – dá sa nainštalovať na mobil aj počítač a potom funguje offline ako bežná aplikácia.
 
 1. **Zverejnenie cez HTTPS** (PWA sa na mobile inštaluje len z HTTPS adresy):
-   v repozitári otvorte *Settings → Pages → Source: GitHub Actions*. Workflow
-   `.github/workflows/deploy-document-reader.yml` potom pri každom pushi do `main` (alebo ručne cez
-   *Actions → Run workflow*) zverejní aplikáciu na `https://<používateľ>.github.io/<repozitár>/`.
+   workflow `.github/workflows/deploy-document-reader.yml` pri každom pushi do `main` (alebo ručne cez
+   *Actions → Run workflow*) skopíruje aplikáciu do vetvy `gh-pages`, z ktorej ju GitHub Pages zverejní na
+   `https://lukasmarcek2-creator.github.io/Lukas-Marcek/`. Ak by stránka nefungovala, skontrolujte
+   *Settings → Pages → Source: Deploy from a branch → gh-pages / (root)*.
 2. **Android (Chrome)**: otvorte adresu → tlačidlo **⬇️ Inštalovať** v hornej lište
    (alebo menu ⋮ → *Inštalovať aplikáciu*).
 3. **iPhone / iPad (Safari)**: tlačidlo **Inštalovať** zobrazí návod – *Zdieľať → Pridať na plochu*.
