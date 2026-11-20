@@ -1,9 +1,11 @@
-name: Android APK – Čítačka dokumentov
+name: Android APK – All Document Reader
 
+# Zabalí aplikáciu z priečinka all-document-reader/ do samostatnej Android aplikácie (Capacitor)
+# a zverejní súbor .apk v sekcii Releases, odkiaľ sa dá stiahnuť priamo v mobile.
 on:
   push:
     paths:
-      - "dokument-citac/**"
+      - "all-document-reader/**"
       - ".github/workflows/android-apk.yml"
   workflow_dispatch:
 
@@ -13,9 +15,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: dokument-citac
     steps:
       - uses: actions/checkout@v4
 
@@ -28,44 +27,49 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Install and build web app
+      - name: Prepare Capacitor project
         run: |
-          npm ci
-          npm run build
-
-      - name: Create Android project
-        run: |
+          mkdir -p apk-build/www
+          cp -r all-document-reader/. apk-build/www/
+          cd apk-build
+          cat > package.json <<'JSON'
+          { "name": "all-document-reader-apk", "private": true, "version": "1.0.0" }
+          JSON
+          cat > capacitor.config.json <<'JSON'
+          { "appId": "sk.lukasmarcek.alldocumentreader", "appName": "All Document Reader", "webDir": "www" }
+          JSON
+          npm install @capacitor/core@6.2.0 @capacitor/cli@6.2.0 @capacitor/android@6.2.0
           npx cap add android
           npx cap sync android
 
       - name: Set app icon
         run: |
-          RES=android/app/src/main/res
+          RES=apk-build/android/app/src/main/res
           rm -rf $RES/mipmap-anydpi-v26
           for d in $RES/mipmap-*; do
-            cp src/icon-192.png $d/ic_launcher.png
-            cp src/icon-192.png $d/ic_launcher_round.png
+            cp all-document-reader/icons/icon-192.png $d/ic_launcher.png
+            cp all-document-reader/icons/icon-192.png $d/ic_launcher_round.png
           done
 
       - name: Build APK
-        working-directory: dokument-citac/android
+        working-directory: apk-build/android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
-          cp app/build/outputs/apk/debug/app-debug.apk ../citacka-dokumentov.apk
+          cp app/build/outputs/apk/debug/app-debug.apk ../../all-document-reader.apk
 
       - uses: actions/upload-artifact@v4
         with:
-          name: citacka-dokumentov-apk
-          path: dokument-citac/citacka-dokumentov.apk
+          name: all-document-reader-apk
+          path: all-document-reader.apk
 
-      - name: Publish release for easy phone download
+      - name: Publish release for phone download
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: citacka-v1.0.${{ github.run_number }}
-          name: Čítačka dokumentov 1.0.${{ github.run_number }}
+          tag_name: apk-v1.0.${{ github.run_number }}
+          name: All Document Reader – Android 1.0.${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          files: dokument-citac/citacka-dokumentov.apk
+          files: all-document-reader.apk
           body: |
-            Android aplikácia Čítačka dokumentov (PDF, Word, Excel, PowerPoint, text, obrázky). Funguje offline.
-            Stiahni súbor citacka-dokumentov.apk v telefóne a nainštaluj ho (povoľ inštaláciu z neznámych zdrojov).
+            Android aplikácia All Document Reader (PDF, Word, Excel, PowerPoint, text). Funguje offline.
+            V telefóne stiahni súbor all-document-reader.apk a otvor ho. Ak sa telefón spýta, povoľ inštaláciu z tohto zdroja.
