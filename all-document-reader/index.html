@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>All Document Reader</title>
+  <meta name="description" content="Prehliadač PDF, Word, Excel, PowerPoint, TXT a CSV v jednej aplikácii.">
+  <meta name="theme-color" content="#2f6fde">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Doc Reader">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-btn only-mobile" id="menuBtn" aria-label="Menu">☰</button>
+    <h1 class="brand">📚 All Document Reader</h1>
+    <div class="top-actions">
+      <button class="btn" id="openFilesBtn">📄 <span class="lbl">Otvoriť súbory</span></button>
+      <button class="btn primary" id="openFolderBtn">📁 <span class="lbl">Skenovať priečinok</span></button>
+      <button class="btn install hidden" id="installBtn">⬇️ <span class="lbl">Inštalovať</span></button>
+      <button class="icon-btn" id="themeBtn" aria-label="Prepnúť tému" title="Prepnúť tému">🌓</button>
+    </div>
+    <input type="file" id="fileInput" multiple hidden
+      accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.md,.json,.log,.rtf,.odt,.ods">
+    <input type="file" id="folderInput" webkitdirectory multiple hidden>
+  </header>
+
+  <div class="layout">
+    <!-- Bočný panel: kategórie podľa formátu -->
+    <aside class="sidebar" id="sidebar">
+      <nav id="categoryList" class="categories"></nav>
+      <div class="sidebar-info" id="sourceInfo">Žiadny priečinok nie je načítaný.</div>
+    </aside>
+
+    <!-- Zoznam súborov -->
+    <section class="library" id="library">
+      <div class="library-toolbar">
+        <input type="search" id="filterInput" placeholder="Hľadať podľa názvu…" aria-label="Hľadať súbory">
+        <select id="sortSelect" aria-label="Zoradiť">
+          <option value="name">Názov A–Z</option>
+          <option value="date">Najnovšie</option>
+          <option value="size">Veľkosť</option>
+          <option value="type">Typ</option>
+        </select>
+      </div>
+      <ul class="file-list" id="fileList"></ul>
+      <div class="empty" id="emptyState">
+        <div class="empty-icon">🗂️</div>
+        <p><strong>Zatiaľ žiadne dokumenty.</strong></p>
+        <p>Kliknite na <em>Skenovať priečinok</em> – aplikácia nájde všetky dokumenty a roztriedi ich podľa formátu.
+          Prípadne súbory sem jednoducho pretiahnite.</p>
+      </div>
+    </section>
+
+    <!-- Prehliadač -->
+    <section class="viewer hidden" id="viewer">
+      <div class="viewer-toolbar">
+        <button class="icon-btn" id="closeViewerBtn" title="Späť na zoznam" aria-label="Späť">←</button>
+        <div class="viewer-title" id="viewerTitle"></div>
+        <div class="viewer-tools">
+          <div class="search-box">
+            <input type="search" id="docSearchInput" placeholder="Hľadať v dokumente…" aria-label="Hľadať v dokumente">
+            <span class="search-count" id="searchCount"></span>
+            <button class="icon-btn sm" id="searchPrev" title="Predchádzajúci">▲</button>
+            <button class="icon-btn sm" id="searchNext" title="Ďalší">▼</button>
+          </div>
+          <div class="page-nav" id="pageNav">
+            <button class="icon-btn sm" id="pagePrev" title="Predchádzajúca strana">‹</button>
+            <input type="number" id="pageInput" min="1" value="1" aria-label="Strana">
+            <span id="pageTotal">/ 1</span>
+            <button class="icon-btn sm" id="pageNext" title="Ďalšia strana">›</button>
+          </div>
+          <div class="zoom">
+            <button class="icon-btn sm" id="zoomOut" title="Oddialiť">−</button>
+            <span id="zoomLabel">100%</span>
+            <button class="icon-btn sm" id="zoomIn" title="Priblížiť">+</button>
+          </div>
+          <button class="icon-btn" id="bookmarkBtn" title="Pridať záložku">🔖</button>
+          <button class="icon-btn" id="bookmarksToggle" title="Záložky">☆</button>
+          <button class="icon-btn" id="viewerInfoBtn" title="Detaily súboru">ⓘ</button>
+        </div>
+      </div>
+      <div class="viewer-body">
+        <div class="doc-scroll" id="docScroll"><div class="doc-content" id="docContent"></div></div>
+        <aside class="bookmarks-panel hidden" id="bookmarksPanel">
+          <h3>Záložky</h3>
+          <ul id="bookmarkList"></ul>
+        </aside>
+      </div>
+    </section>
+  </div>
+
+  <!-- Dialóg s detailmi / akciami -->
+  <dialog id="detailsDialog">
+    <form method="dialog" class="dialog-inner">
+      <h2 id="detailsName"></h2>
+      <dl id="detailsList" class="details"></dl>
+      <div class="dialog-actions">
+        <button type="button" class="btn" id="dlgOpen">Otvoriť</button>
+        <button type="button" class="btn" id="dlgRename">Premenovať</button>
+        <button type="button" class="btn" id="dlgShare">Zdieľať</button>
+        <button type="button" class="btn danger" id="dlgDelete">Odstrániť</button>
+        <button class="btn ghost" value="close">Zavrieť</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Návod na inštaláciu pre iPhone / iPad (Safari nemá tlačidlo inštalácie) -->
+  <dialog id="iosDialog">
+    <form method="dialog" class="dialog-inner">
+      <h2>Inštalácia na iPhone / iPad</h2>
+      <ol class="ios-steps">
+        <li>V Safari ťuknite na tlačidlo <strong>Zdieľať</strong> <span aria-hidden="true">(□↑)</span>.</li>
+        <li>Zvoľte <strong>Pridať na plochu</strong>.</li>
+        <li>Potvrďte <strong>Pridať</strong> – aplikácia sa objaví medzi ostatnými.</li>
+      </ol>
+      <div class="dialog-actions"><button class="btn primary" value="close">Rozumiem</button></div>
+    </form>
+  </dialog>
+
+  <div class="update-bar hidden" id="updateBar">Je dostupná nová verzia. <button class="btn" id="updateBtn">Aktualizovať</button></div>
+  <div class="drop-overlay hidden" id="dropOverlay">Pustite súbory sem</div>
+  <div class="toast hidden" id="toast" role="status"></div>
+
+  <script src="vendor/pdf.min.js"></script>
+  <script src="vendor/mammoth.browser.min.js"></script>
+  <script src="vendor/jszip.min.js"></script>
+  <script src="vendor/xlsx.full.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
