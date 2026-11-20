@@ -83,6 +83,32 @@
           <button class="icon-btn" id="bookmarkBtn" title="Pridať záložku">🔖</button>
           <button class="icon-btn" id="bookmarksToggle" title="Záložky">☆</button>
           <button class="icon-btn" id="viewerInfoBtn" title="Detaily súboru">ⓘ</button>
+          <button class="btn primary hidden" id="pdfEditBtn" title="Upraviť PDF">✏️ Upraviť</button>
+        </div>
+      </div>
+      <div class="pe-bar hidden" id="pdfEditBar" role="toolbar" aria-label="Úprava PDF">
+        <div class="pe-group">
+          <button class="btn active" id="peModeEdit" title="Ťukni na text a prepíš ho">✏️ Prepísať text</button>
+          <button class="btn" id="peModeAdd" title="Ťukni na miesto, kam pridať nový text">➕ Pridať text</button>
+        </div>
+        <div class="pe-group">
+          <select id="peFamily" aria-label="Písmo">
+            <option value="sans">Arial / Helvetica</option>
+            <option value="serif">Times New Roman</option>
+            <option value="mono">Courier</option>
+          </select>
+          <button class="icon-btn sm" id="peSmaller" title="Menšie písmo">A−</button>
+          <span class="pe-size" id="peSizeLabel"></span>
+          <button class="icon-btn sm" id="peBigger" title="Väčšie písmo">A+</button>
+          <button class="icon-btn sm" id="peBold" title="Tučné"><b>B</b></button>
+          <button class="icon-btn sm" id="peItalic" title="Kurzíva"><i>I</i></button>
+          <input type="color" id="peColor" aria-label="Farba textu" title="Farba textu">
+          <button class="icon-btn sm" id="peRevert" title="Vrátiť pôvodný text">↶</button>
+          <button class="icon-btn sm" id="peDelete" title="Zmazať text">🗑</button>
+        </div>
+        <div class="pe-group pe-end">
+          <button class="btn" id="peDone">Hotovo</button>
+          <button class="btn primary" id="peSave">Uložiť</button>
         </div>
       </div>
       <div class="viewer-body">
@@ -110,6 +136,22 @@
     </form>
   </dialog>
 
+  <!-- Uloženie upraveného PDF -->
+  <dialog id="pdfSaveDialog">
+    <form method="dialog" class="dialog-inner">
+      <h2>Uložiť upravený PDF</h2>
+      <label class="pe-field">Názov súboru
+        <input type="text" id="peSaveName" autocomplete="off">
+      </label>
+      <p class="pe-note">Upravený text sa vpíše na miesto pôvodného rovnakým typom a veľkosťou písma, takže dokument vyzerá ako originál.</p>
+      <div class="dialog-actions">
+        <button class="btn primary" value="copy">Uložiť ako nový súbor</button>
+        <button class="btn danger" value="overwrite" id="peOverwrite">Prepísať pôvodný súbor</button>
+        <button class="btn ghost" value="cancel">Zrušiť</button>
+      </div>
+    </form>
+  </dialog>
+
   <!-- Návod na inštaláciu pre iPhone / iPad (Safari nemá tlačidlo inštalácie) -->
   <dialog id="iosDialog">
     <form method="dialog" class="dialog-inner">
@@ -131,6 +173,9 @@
   <script src="vendor/mammoth.browser.min.js"></script>
   <script src="vendor/jszip.min.js"></script>
   <script src="vendor/xlsx.full.min.js"></script>
+  <script src="vendor/pdf-lib.min.js"></script>
+  <script src="vendor/fontkit.umd.min.js"></script>
   <script src="app.js"></script>
+  <script src="pdf-editor.js"></script>
 </body>
 </html>

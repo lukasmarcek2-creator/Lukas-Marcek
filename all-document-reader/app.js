@@ -388,6 +388,15 @@ async function deleteDoc(doc) {
 
 async function shareDoc(doc) {
   const file = new File([doc.file], doc.name, { type: doc.file.type });
+  const cap = window.Capacitor;
+  if (cap && typeof cap.nativePromise === 'function') { // Android aplikácia
+    try {
+      const data = await blobToBase64(file);
+      const { uri } = await cap.nativePromise('Filesystem', 'writeFile', { path: doc.name, data, directory: 'CACHE' });
+      await cap.nativePromise('Share', 'share', { title: doc.name, files: [uri], dialogTitle: 'Zdieľať dokument' });
+    } catch (e) { if (!/cancel/i.test(e.message || '')) toast('Zdieľanie zlyhalo: ' + (e.message || e)); }
+    return;
+  }
   try {
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({ files: [file], title: doc.name });
@@ -405,8 +414,11 @@ async function shareDoc(doc) {
 // ---------------------------------------------------------------------------
 // Prehliadač
 // ---------------------------------------------------------------------------
+const unsavedPdfOk = () => !(window.PdfEdit?.hasChanges()) || confirm('Máš neuložené úpravy PDF. Naozaj ich chceš zahodiť?');
+
 async function openDoc(doc) {
   if (!doc) return;
+  if (state.current && state.current !== doc && !unsavedPdfOk()) return;
   state.ctrl?.destroy?.();
   state.current = doc; state.ctrl = null; state.zoom = 1;
   const recent = [docKey(doc), ...recentKeys().filter(k => k !== docKey(doc))].slice(0, 30);
@@ -437,6 +449,7 @@ async function openDoc(doc) {
 }
 
 function closeViewer() {
+  if (!unsavedPdfOk()) return;
   state.ctrl?.destroy?.();
   state.current = null; state.ctrl = null;
   el.viewer.classList.add('hidden');
@@ -526,7 +539,8 @@ function highlight(root, query) {
 
 // ---- PDF -------------------------------------------------------------------
 async function renderPdf(doc) {
-  const pdf = await pdfjsLib.getDocument({ data: await doc.file.arrayBuffer() }).promise;
+  const bytes = await doc.file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
   el.docContent.innerHTML = '';
   const results = document.createElement('div');
   results.className = 'pdf-results hidden';
@@ -545,11 +559,12 @@ async function renderPdf(doc) {
     pages.push(div);
   }
   let zoom = 1, ratio = vp1.height / vp1.width;
-  const sizes = {};
+  const sizes = {}, widths = {};
   const layout = () => pages.forEach((p, i) => {
     const w = baseWidth() * zoom;
     p.style.width = w + 'px';
     p.style.height = w * (sizes[i + 1] || ratio) + 'px';
+    p.style.setProperty('--k', w / (widths[i + 1] || vp1.width)); // px na 1 bod PDF (pre úpravy textu)
   });
   layout();
 
@@ -561,8 +576,9 @@ async function renderPdf(doc) {
     rendered.set(n, w);
     const page = await pdf.getPage(n);
     const vp0 = page.getViewport({ scale: 1 });
-    sizes[n] = vp0.height / vp0.width;
+    sizes[n] = vp0.height / vp0.width; widths[n] = vp0.width;
     div.style.height = w * sizes[n] + 'px';
+    div.style.setProperty('--k', w / vp0.width);
     const dpr = window.devicePixelRatio || 1;
     const vp = page.getViewport({ scale: (w / vp0.width) * dpr });
     const canvas = document.createElement('canvas');
@@ -571,6 +587,7 @@ async function renderPdf(doc) {
     if (rendered.get(n) !== w) return; // medzitým zmenený zoom
     div.querySelector('canvas')?.remove();
     div.prepend(canvas);
+    window.PdfEdit?.pageDrawn(n);
   }
   const io = new IntersectionObserver(entries => {
     entries.forEach(en => { if (en.isIntersecting) draw(+en.target.dataset.page); });
@@ -634,8 +651,9 @@ async function renderPdf(doc) {
       pages.forEach((pg, i) => { const r = pg.getBoundingClientRect(); const s = el.docScroll.getBoundingClientRect();
         if (r.bottom > s.top - 600 && r.top < s.bottom + 600) draw(i + 1); });
     },
-    destroy() { io.disconnect(); pdf.destroy(); },
+    destroy() { window.PdfEdit?.detach(); io.disconnect(); pdf.destroy(); },
   });
+  window.PdfEdit?.attach({ doc, pdf, bytes, pages });
   return ctrl;
 }
 

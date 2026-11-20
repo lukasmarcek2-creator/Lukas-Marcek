@@ -1,0 +1,76 @@
+name: Android APK – All Document Reader
+
+# Zabalí aplikáciu z priečinka all-document-reader/ do samostatnej Android aplikácie (Capacitor)
+# a zverejní súbor .apk v sekcii Releases, odkiaľ sa dá stiahnuť priamo v mobile.
+on:
+  push:
+    paths:
+      - "all-document-reader/**"
+      - ".github/workflows/android-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Prepare Capacitor project
+        run: |
+          mkdir -p apk-build/www
+          cp -r all-document-reader/. apk-build/www/
+          cd apk-build
+          cat > package.json <<'JSON'
+          { "name": "all-document-reader-apk", "private": true, "version": "1.0.0" }
+          JSON
+          cat > capacitor.config.json <<'JSON'
+          { "appId": "sk.lukasmarcek.alldocumentreader", "appName": "All Document Reader", "webDir": "www" }
+          JSON
+          npm install @capacitor/core@6.2.0 @capacitor/cli@6.2.0 @capacitor/android@6.2.0 @capacitor/filesystem@6.0.3 @capacitor/share@6.0.3
+          npx cap add android
+          npx cap sync android
+
+      - name: Set app icon
+        run: |
+          RES=apk-build/android/app/src/main/res
+          rm -rf $RES/mipmap-anydpi-v26
+          for d in $RES/mipmap-*; do
+            cp all-document-reader/icons/icon-192.png $d/ic_launcher.png
+            cp all-document-reader/icons/icon-192.png $d/ic_launcher_round.png
+          done
+
+      - name: Build APK
+        working-directory: apk-build/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+          cp app/build/outputs/apk/debug/app-debug.apk ../../all-document-reader.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: all-document-reader-apk
+          path: all-document-reader.apk
+
+      - name: Publish release for phone download
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-v1.0.${{ github.run_number }}
+          name: All Document Reader – Android 1.0.${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          files: all-document-reader.apk
+          body: |
+            Android aplikácia All Document Reader (PDF, Word, Excel, PowerPoint, text). Funguje offline.
+            Novinka: úprava PDF – prepisovanie a pridávanie textu tak, aby dokument vyzeral ako originál.
+            V telefóne stiahni súbor all-document-reader.apk a otvor ho. Ak sa telefón spýta, povoľ inštaláciu z tohto zdroja.

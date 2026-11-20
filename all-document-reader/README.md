@@ -15,6 +15,23 @@ All-in-one prehliadač dokumentov, ktorý beží priamo v prehliadači – bez s
 
 Zameranie je **„prezeranie namiesto úprav“** – aplikácia je prehliadač, nie editor.
 
+## Úprava PDF
+
+V otvorenom PDF ťuknite na **✏️ Upraviť**:
+
+- **Prepísať text** – ťuknite na ľubovoľný riadok textu a prepíšte ho (Enter alebo ťuknutie mimo = hotovo).
+  Aplikácia rozpozná pôvodné písmo (Arial/Helvetica, Times, Courier), jeho veľkosť, tučnosť, kurzívu aj farbu
+  a nový text vpíše presne na pôvodné miesto – pôvodný text prekryje farbou pozadia, takže dokument vyzerá ako originál.
+- **Pridať text** – ťuknite kamkoľvek na stranu a napíšte nový text.
+- V lište sa dá zmeniť písmo, veľkosť (A−/A+), tučné, kurzíva, farba, vrátiť pôvodný text (↶) alebo text zmazať (🗑).
+- **Uložiť** – uloží upravený dokument ako nový súbor (na počítači v Chrome/Edge sa dá prepísať aj pôvodný súbor).
+  V Android aplikácii sa súbor uloží do *Dokumenty › All Document Reader* a otvorí sa ponuka na uloženie alebo zdieľanie.
+
+Obmedzenia: úprava funguje po riadkoch (text sa automaticky nepreteká do ďalšieho riadku), naskenované PDF
+(obrázky bez textu) nemajú čo prepísať a pôvodný text ostáva v súbore skrytý pod prekrytím – na začiernenie
+citlivých údajov preto táto funkcia nie je vhodná. Písma Arimo, Tinos a Cousine sú pod licenciou SIL OFL
+(`vendor/fonts/LICENSE.txt`).
+
 ## Spustenie
 
 Aplikácia potrebuje byť servírovaná cez HTTP (kvôli PDF workeru):

@@ -1,10 +1,11 @@
 /* Service worker: offline režim + príjem zdieľaných súborov (Web Share Target). */
-const VERSION = 'adr-v1';
+const VERSION = 'adr-v2';
 const SHARED = 'adr-shared';
 const ASSETS = [
   './', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest',
   'vendor/pdf.min.js', 'vendor/pdf.worker.min.js', 'vendor/mammoth.browser.min.js',
-  'vendor/jszip.min.js', 'vendor/xlsx.full.min.js',
+  'vendor/jszip.min.js', 'vendor/xlsx.full.min.js', 'pdf-editor.js', 'vendor/pdf-lib.min.js', 'vendor/fontkit.umd.min.js',
+  ...['Arimo', 'Tinos', 'Cousine'].flatMap(f => ['400Regular', '700Bold', '400Regular_Italic', '700Bold_Italic'].map(s => `vendor/fonts/${f}_${s}.ttf`)),
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-192.png', 'icons/maskable-512.png',
   'icons/apple-touch-icon.png', 'icons/favicon-32.png',
 ];
