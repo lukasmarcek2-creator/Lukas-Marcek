@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>All Document Reader</title>
   <meta name="description" content="Prehliadač PDF, Word, Excel, PowerPoint, TXT a CSV v jednej aplikácii.">
+  <meta name="theme-color" content="#2f6fde">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Doc Reader">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,6 +22,7 @@
     <div class="top-actions">
       <button class="btn" id="openFilesBtn">📄 <span class="lbl">Otvoriť súbory</span></button>
       <button class="btn primary" id="openFolderBtn">📁 <span class="lbl">Skenovať priečinok</span></button>
+      <button class="btn install hidden" id="installBtn">⬇️ <span class="lbl">Inštalovať</span></button>
       <button class="icon-btn" id="themeBtn" aria-label="Prepnúť tému" title="Prepnúť tému">🌓</button>
     </div>
     <input type="file" id="fileInput" multiple hidden
@@ -101,6 +110,20 @@
     </form>
   </dialog>
 
+  <!-- Návod na inštaláciu pre iPhone / iPad (Safari nemá tlačidlo inštalácie) -->
+  <dialog id="iosDialog">
+    <form method="dialog" class="dialog-inner">
+      <h2>Inštalácia na iPhone / iPad</h2>
+      <ol class="ios-steps">
+        <li>V Safari ťuknite na tlačidlo <strong>Zdieľať</strong> <span aria-hidden="true">(□↑)</span>.</li>
+        <li>Zvoľte <strong>Pridať na plochu</strong>.</li>
+        <li>Potvrďte <strong>Pridať</strong> – aplikácia sa objaví medzi ostatnými.</li>
+      </ol>
+      <div class="dialog-actions"><button class="btn primary" value="close">Rozumiem</button></div>
+    </form>
+  </dialog>
+
+  <div class="update-bar hidden" id="updateBar">Je dostupná nová verzia. <button class="btn" id="updateBtn">Aktualizovať</button></div>
   <div class="drop-overlay hidden" id="dropOverlay">Pustite súbory sem</div>
   <div class="toast hidden" id="toast" role="status"></div>
 

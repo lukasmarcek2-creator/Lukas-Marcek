@@ -25,6 +25,27 @@ python3 -m http.server 8080
 # otvorte http://localhost:8080
 ```
 
+## Inštalácia ako aplikácia (PWA)
+
+Aplikácia je PWA – dá sa nainštalovať na mobil aj počítač a potom funguje offline ako bežná aplikácia.
+
+1. **Zverejnenie cez HTTPS** (PWA sa na mobile inštaluje len z HTTPS adresy):
+   v repozitári otvorte *Settings → Pages → Source: GitHub Actions*. Workflow
+   `.github/workflows/deploy-document-reader.yml` potom pri každom pushi do `main` (alebo ručne cez
+   *Actions → Run workflow*) zverejní aplikáciu na `https://<používateľ>.github.io/<repozitár>/`.
+2. **Android (Chrome)**: otvorte adresu → tlačidlo **⬇️ Inštalovať** v hornej lište
+   (alebo menu ⋮ → *Inštalovať aplikáciu*).
+3. **iPhone / iPad (Safari)**: tlačidlo **Inštalovať** zobrazí návod – *Zdieľať → Pridať na plochu*.
+
+Čo PWA pridáva:
+
+- **Offline režim** – service worker (`sw.js`) uloží celú aplikáciu aj knižnice do cache.
+- **Zdieľanie do aplikácie** (Android) – v ľubovoľnej aplikácii *Zdieľať → Doc Reader* a dokument sa hneď otvorí.
+- **Otvoriť pomocou…** (Chrome/Edge na počítači) – nainštalovaná aplikácia sa ponúkne ako program pre PDF, DOCX, XLSX…
+- **Aktualizácie** – keď vyjde nová verzia, zobrazí sa lišta *Aktualizovať*.
+
+Pri zmene súborov aplikácie zvýšte `VERSION` v `sw.js`, aby si zariadenia stiahli novú verziu.
+
 ## Oprávnenia
 
 - **Chrome / Edge**: tlačidlo *Skenovať priečinok* používa File System Access API. Pri premenovaní alebo

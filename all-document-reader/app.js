@@ -1039,3 +1039,86 @@ document.addEventListener('keydown', e => {
 });
 
 render();
+
+// ---------------------------------------------------------------------------
+// PWA: service worker, inštalácia, otváranie a zdieľanie súborov
+// ---------------------------------------------------------------------------
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    const offer = w => {
+      if (!w || !navigator.serviceWorker.controller) return; // prvá inštalácia – netreba ponúkať
+      $('updateBar').classList.remove('hidden');
+      $('updateBtn').onclick = () => w.postMessage('skipWaiting');
+    };
+    if (reg.waiting) offer(reg.waiting);
+    reg.addEventListener('updatefound', () => {
+      const w = reg.installing;
+      w.addEventListener('statechange', () => { if (w.state === 'installed') offer(w); });
+    });
+  }).catch(e => console.warn('Service worker sa nepodarilo zaregistrovať', e));
+  let reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (navigator.serviceWorker.controller && !reloading && !$('updateBar').classList.contains('hidden')) {
+      reloading = true; location.reload();
+    }
+  });
+}
+
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+let installEvent = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  installEvent = e;
+  $('installBtn').classList.remove('hidden');
+});
+window.addEventListener('appinstalled', () => {
+  installEvent = null;
+  $('installBtn').classList.add('hidden');
+  toast('Aplikácia bola nainštalovaná');
+});
+if (isIos && !isStandalone()) $('installBtn').classList.remove('hidden');
+
+$('installBtn').onclick = async () => {
+  if (installEvent) {
+    installEvent.prompt();
+    const { outcome } = await installEvent.userChoice;
+    if (outcome === 'accepted') $('installBtn').classList.add('hidden');
+    installEvent = null;
+  } else if (isIos) {
+    $('iosDialog').showModal();
+  }
+};
+
+// Otvorenie súboru cez „Otvoriť pomocou…“ (nainštalovaná aplikácia, Chrome/Edge)
+if ('launchQueue' in window) {
+  window.launchQueue.setConsumer(async params => {
+    if (!params.files?.length) return;
+    const docs = await Promise.all(params.files.map(async h => makeDoc(await h.getFile(), h.name, h)));
+    const n = addDocs(docs);
+    if (n) openDoc(docs.find(Boolean));
+  });
+}
+
+// Súbory zdieľané z inej aplikácie (Web Share Target – service worker ich uloží do cache)
+async function receiveSharedFiles() {
+  const params = new URLSearchParams(location.search);
+  if (!params.has('shared') || !('caches' in window)) return;
+  history.replaceState(null, '', location.pathname);
+  const cache = await caches.open('adr-shared');
+  const reqs = await cache.keys();
+  const docs = [];
+  for (const req of reqs) {
+    const res = await cache.match(req);
+    const name = decodeURIComponent(res.headers.get('X-Name') || 'subor');
+    const blob = await res.blob();
+    docs.push(makeDoc(new File([blob], name, { type: blob.type, lastModified: +res.headers.get('X-Modified') || Date.now() }), name));
+    await cache.delete(req);
+  }
+  const n = addDocs(docs);
+  if (n === 1) openDoc(docs.find(Boolean));
+  else toast(n ? `Prijatých ${n} dokumentov` : 'Zdieľaný súbor nie je podporovaný');
+}
+receiveSharedFiles();
+
